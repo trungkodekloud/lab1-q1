@@ -1,18 +1,34 @@
-name: CI
+name: Workflow Demo
 
-on:
-  push:  
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
+    - name: Create a text file
+      run: echo "Hello, world!" > hello.txt
+
+    - name: Archive text file
+      uses: actions/upload-artifact@v2
+      with:
+        name: hello-artifact
+        path: hello.txt
+        
+  download:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download text file
+      uses: actions/download-artifact@v2
+      with:
+        name: hello-artifact
+        path: ./artifacts
+
+    - name: Display content of the text file
+      run: cat ./artifacts/hello.txt
